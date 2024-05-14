@@ -2,7 +2,7 @@ import { EntityID } from "src/core/entities/EntityID"
 import { Question } from "../../enterprise/entities/Question"
 import { Slug } from "../../enterprise/entities/value-objects/Slug"
 import { title } from "process"
-import { IQuestionsRepository } from "../../repositories/IQuestionRepository"
+import { IQuestionsRepository } from "../../repositories/interfaces/IQuestionRepository"
 
 interface createQuestionRequest {
     authorId: string
