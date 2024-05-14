@@ -1,6 +1,6 @@
 import dayjs from "dayjs"
-import { BaseEntity } from "../core/entities/BaseEntity"
-import { EntityID } from "../core/entities/EntityID"
+import { BaseEntity } from "src/core/entities/BaseEntity" 
+import { EntityID } from "src/core/entities/EntityID" 
 import { Slug } from "./value-objects/Slug"
 
 export interface QuestionModel {
