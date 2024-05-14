@@ -14,7 +14,7 @@ export interface QuestionModel {
     updatedAt?: Date
 }
 
-export default class Question extends BaseEntity<QuestionModel> {
+export class Question extends BaseEntity<QuestionModel> {
     get title(): string {
         return this.properties.title
     }

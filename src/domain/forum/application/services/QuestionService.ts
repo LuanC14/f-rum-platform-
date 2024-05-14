@@ -1,19 +1,34 @@
-import { AnswerRepository } from "../../../repositories/AnswerRepository"
-import { Answer } from "../../enterprise/entities/Answer"
+import { EntityID } from "src/core/entities/EntityID"
+import { Question } from "../../enterprise/entities/Question"
+import { Slug } from "../../enterprise/entities/value-objects/Slug"
+import { title } from "process"
+import { IQuestionsRepository } from "../../repositories/IQuestionRepository"
 
-interface answerQuestionRequest {
-    instructorId: string
-    questionId: string
+interface createQuestionRequest {
+    authorId: string
+    title: string
     content: string
 }
 
 export class QuestionService {
 
-    constructor(private answerRepository: AnswerRepository) { }
+    constructor(private repository : IQuestionsRepository) { }
 
-    public async answerQuestion({ instructorId, questionId, content }: answerQuestionRequest): Promise<Answer> {
-        const answer = new Answer({ content, authorId: instructorId, questionId })
+    public async createQuestion(req: createQuestionRequest) {
+        const question = new Question({
+            authorId: new EntityID(req.authorId),
+            title: req.title,
+            content: req.content,
+            slug: Slug.createFromText(title),
+            createdAt: new Date()
+        })
 
-        return await this.answerRepository.create(answer);
+        this.repository.create(question)
     }
+
+    // public async answerQuestion({ instructorId, questionId, content }: answerQuestionRequest): Promise<Answer> {
+    //     const answer = new Answer({ content, authorId: instructorId, questionId })
+
+    //     return await this.answerRepository.create(answer);
+    // }
 }

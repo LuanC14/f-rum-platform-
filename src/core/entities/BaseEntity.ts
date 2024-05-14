@@ -1,10 +1,10 @@
 import { EntityID } from "./EntityID"
 
-interface BaseModel {
+interface EntityModel {
     id?: EntityID
 }
 
-export class BaseEntity<ObjectModel extends BaseModel> {
+export class BaseEntity<ObjectModel extends EntityModel> {
     private id: EntityID
     protected properties: ObjectModel
 
