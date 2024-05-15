@@ -4,6 +4,7 @@ import { QuestionService } from "../services/QuestionService"
 import { describe, beforeEach, it, expect } from 'vitest'
 import { Slug } from "../../enterprise/entities/value-objects/Slug"
 import { Question } from "../../enterprise/entities/Question"
+import { makeQuestion } from "./factories/make-question"
 
 let inMemoryQuestionsRepository: InMemoryQuestionsRepository
 let service: QuestionService
@@ -15,28 +16,18 @@ describe('Question Service (unit)', () => {
   })
 
   it('should be able to create a question', async () => {
-    const { question } = await service.createQuestion({
-      authorId: '1',
-      title: 'Nova pergunta',
-      content: 'Conteúdo da pergunta',
-    })
+    const newQuestion = makeQuestion()
+    await inMemoryQuestionsRepository.create(newQuestion)
 
-    expect(question.Id).toBeTruthy()
-    expect(inMemoryQuestionsRepository.items[0].Id).toEqual(question.Id)
+    expect(newQuestion.Id).toBeTruthy()
+    expect(inMemoryQuestionsRepository.items[0].Id).toEqual(newQuestion.Id)
   })
 
   it('should de able to get a question by slug', async () => {
-    const newQuestion = new Question({
-      authorId: new EntityID(),
-      title: 'Example Question',
-      slug: Slug.createFromText('Example Question'),
-      content: 'Example content',
-      createdAt: new Date()
-    })
-
+    const newQuestion = makeQuestion()
     await inMemoryQuestionsRepository.create(newQuestion)
 
-    const { question } = await service.findBySlug({slug: Slug.createFromText('Example Question').Value})
+    const { question } = await service.findBySlug({ slug: Slug.createFromText('Example Question').Value })
 
     expect(question.Id).toBeTruthy()
     expect(question.title).toEqual(newQuestion.title)
