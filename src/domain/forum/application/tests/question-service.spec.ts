@@ -1,9 +1,7 @@
-import { EntityID } from "src/core/entities/EntityID"
 import { InMemoryQuestionsRepository } from "../../repositories/inMemory/inMemoryQuestionRepository"
 import { QuestionService } from "../services/QuestionService"
 import { describe, beforeEach, it, expect } from 'vitest'
 import { Slug } from "../../enterprise/entities/value-objects/Slug"
-import { Question } from "../../enterprise/entities/Question"
 import { makeQuestion } from "./factories/make-question"
 
 let inMemoryQuestionsRepository: InMemoryQuestionsRepository
@@ -27,7 +25,7 @@ describe('Question Service (unit)', () => {
     const newQuestion = makeQuestion()
     await inMemoryQuestionsRepository.create(newQuestion)
 
-    const { question } = await service.findBySlug({ slug: Slug.createFromText('Example Question').Value })
+    const { question } = await service.findBySlug({ slug: newQuestion.slug.Value })
 
     expect(question.Id).toBeTruthy()
     expect(question.title).toEqual(newQuestion.title)
