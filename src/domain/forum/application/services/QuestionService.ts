@@ -10,11 +10,14 @@ interface createQuestionRequest {
     content: string
 }
 
+interface CreateQuestionUseCaseResponse {
+    question: Question
+}
 export class QuestionService {
 
-    constructor(private repository : IQuestionsRepository) { }
+    constructor(private repository: IQuestionsRepository) { }
 
-    public async createQuestion(req: createQuestionRequest) {
+    public async createQuestion(req: createQuestionRequest): Promise<CreateQuestionUseCaseResponse> {
         const question = new Question({
             authorId: new EntityID(req.authorId),
             title: req.title,
@@ -24,6 +27,8 @@ export class QuestionService {
         })
 
         this.repository.create(question)
+
+        return { question }
     }
 
     // public async answerQuestion({ instructorId, questionId, content }: answerQuestionRequest): Promise<Answer> {
