@@ -10,14 +10,24 @@ interface createQuestionRequest {
     content: string
 }
 
-interface CreateQuestionUseCaseResponse {
+interface CreateQuestionResponse {
     question: Question
 }
+
+interface GetQuestionBySlugRequest {
+    slug: string
+}
+
+interface GetQuestionBySlugResponse {
+    question: Question
+}
+
+
 export class QuestionService {
 
     constructor(private repository: IQuestionsRepository) { }
 
-    public async createQuestion(req: createQuestionRequest): Promise<CreateQuestionUseCaseResponse> {
+    public async createQuestion(req: createQuestionRequest): Promise<CreateQuestionResponse> {
         const question = new Question({
             authorId: new EntityID(req.authorId),
             title: req.title,
@@ -27,6 +37,16 @@ export class QuestionService {
         })
 
         this.repository.create(question)
+
+        return { question }
+    }
+
+    async findBySlug({ slug }: GetQuestionBySlugRequest): Promise<GetQuestionBySlugResponse> {
+        const question = await this.repository.findBySlug(slug)
+
+        if (!question) {
+            throw new Error('Question not found.')
+        }
 
         return { question }
     }

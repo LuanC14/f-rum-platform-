@@ -5,6 +5,10 @@ export class Slug {
         this.value = value
     }
 
+    get Value() {
+        return this.value
+    }
+
     /**
      * Receba uma string e a formate em uma 'slug'.
      * 
