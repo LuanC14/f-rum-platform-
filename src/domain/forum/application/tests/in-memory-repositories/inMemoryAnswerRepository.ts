@@ -1,5 +1,5 @@
-import { Answer } from "../../enterprise/entities/Answer"
-import { IAnswerRepository } from "../interfaces/IAnswerRepository"
+import { Answer } from "../../../enterprise/entities/Answer"
+import { IAnswerRepository } from "../../../repositories/interfaces/IAnswerRepository"
 
 export class InMemoryAnswersRepository implements IAnswerRepository {
     public items: Answer[] = []

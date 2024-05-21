@@ -1,54 +1,75 @@
-import { EntityID } from "src/core/entities/EntityID"
-import { Question } from "../../enterprise/entities/Question"
-import { Slug } from "../../enterprise/entities/value-objects/Slug"
-import { title } from "process"
-import { IQuestionsRepository } from "../../repositories/interfaces/IQuestionRepository"
+import { EntityID } from "src/core/entities/EntityID";
+import { Question } from "../../enterprise/entities/Question";
+import { Slug } from "../../enterprise/entities/value-objects/Slug";
+import { title } from "process";
+import { IQuestionsRepository } from "../../repositories/interfaces/IQuestionRepository";
 
 interface createQuestionRequest {
-    authorId: string
-    title: string
-    content: string
+    authorId: string;
+    title: string;
+    content: string;
 }
 
 interface CreateQuestionResponse {
-    question: Question
+    question: Question;
 }
 
 interface GetQuestionBySlugRequest {
-    slug: string
+    slug: string;
 }
 
 interface GetQuestionBySlugResponse {
-    question: Question
+    question: Question;
 }
 
+interface DeleteQuestionUseCaseRequest {
+    authorId: string;
+    questionId: string;
+}
 
 export class QuestionService {
-
     constructor(private repository: IQuestionsRepository) { }
 
-    public async createQuestion(req: createQuestionRequest): Promise<CreateQuestionResponse> {
+    public async createQuestion(
+        req: createQuestionRequest
+    ): Promise<CreateQuestionResponse> {
         const question = new Question({
             authorId: new EntityID(req.authorId),
             title: req.title,
             content: req.content,
             slug: Slug.createFromText(title),
-            createdAt: new Date()
-        })
+            createdAt: new Date(),
+        });
 
-        this.repository.create(question)
+        this.repository.create(question);
 
-        return { question }
+        return { question };
     }
 
-    async findBySlug({ slug }: GetQuestionBySlugRequest): Promise<GetQuestionBySlugResponse> {
-        const question = await this.repository.findBySlug(slug)
+    async findBySlug({
+        slug,
+    }: GetQuestionBySlugRequest): Promise<GetQuestionBySlugResponse> {
+        const question = await this.repository.findBySlug(slug);
 
         if (!question) {
-            throw new Error('Question not found.')
+            throw new Error("Question not found.");
         }
 
-        return { question }
+        return { question };
+    }
+
+    async deleteQuestion({ questionId, authorId }: DeleteQuestionUseCaseRequest) {
+        const question = await this.repository.findById(questionId);
+
+        if (!question) {
+            throw new Error("Item não encontrado");
+        }
+
+        if (authorId !== question.authorId.toString) {
+            throw new Error("Not allowed.");
+        }
+
+        await this.repository.delete(question);
     }
 
     // public async answerQuestion({ instructorId, questionId, content }: answerQuestionRequest): Promise<Answer> {
