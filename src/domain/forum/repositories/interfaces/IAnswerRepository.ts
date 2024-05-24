@@ -1,5 +1,7 @@
 import { Answer } from "../../enterprise/entities/Answer";
 
 export interface IAnswerRepository {
-    create(answer: Answer): Promise<void> 
+    findById(answer: string): Promise<Answer | null>
+    create(answer: Answer): Promise<void>
+    delete(answer: Answer): Promise<void>
 }
