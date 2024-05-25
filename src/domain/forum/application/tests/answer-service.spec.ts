@@ -7,19 +7,17 @@ import { EntityID } from "src/core/entities/EntityID"
 let inMemoryAnswersRepository: InMemoryAnswersRepository
 let sut: AnswerService
 
-describe('Delete Answer', () => {
+describe('Question Service (unit)', () => {
     beforeEach(() => {
         inMemoryAnswersRepository = new InMemoryAnswersRepository()
         sut = new AnswerService(inMemoryAnswersRepository)
     })
 
     it('should be able to delete a answer', async () => {
-        const newAnswer = makeAnswer(
-            {
-                authorId: new EntityID('author-1'),
-            },
-            new EntityID('answer-1'),
-        )
+        const newAnswer = makeAnswer({
+            id: new EntityID('answer-1'),
+            authorId: new EntityID('author-1')
+        })
 
         await inMemoryAnswersRepository.create(newAnswer)
 
@@ -32,12 +30,10 @@ describe('Delete Answer', () => {
     })
 
     it('should not be able to delete a answer from another user', async () => {
-        const newAnswer = makeAnswer(
-            {
-                authorId: new EntityID('author-1'),
-            },
-            new EntityID('answer-1'),
-        )
+        const newAnswer = makeAnswer({
+            id: new EntityID('answer-1'),
+            authorId: new EntityID('author-1')
+        })
 
         await inMemoryAnswersRepository.create(newAnswer)
 
