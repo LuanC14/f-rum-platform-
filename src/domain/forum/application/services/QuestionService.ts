@@ -27,12 +27,19 @@ interface DeleteQuestionUseCaseRequest {
     questionId: string;
 }
 
+interface EditQuestionUseCaseRequest {
+    authorId: string
+    questionId: string
+    title: string
+    content: string
+}
+
+interface EditQuestionUseCaseResponse { }
+
 export class QuestionService {
     constructor(private repository: IQuestionsRepository) { }
 
-    public async createQuestion(
-        req: createQuestionRequest
-    ): Promise<CreateQuestionResponse> {
+    public async createQuestion(req: createQuestionRequest): Promise<CreateQuestionResponse> {
         const question = new Question({
             authorId: new EntityID(req.authorId),
             title: req.title,
@@ -46,9 +53,7 @@ export class QuestionService {
         return { question };
     }
 
-    async findBySlug({
-        slug,
-    }: GetQuestionBySlugRequest): Promise<GetQuestionBySlugResponse> {
+    async findBySlug({ slug }: GetQuestionBySlugRequest): Promise<GetQuestionBySlugResponse> {
         const question = await this.repository.findBySlug(slug);
 
         if (!question) {
@@ -71,6 +76,27 @@ export class QuestionService {
 
         await this.repository.delete(question);
     }
+
+    async updateQuestion({ authorId, questionId, title, content, }: EditQuestionUseCaseRequest): Promise<EditQuestionUseCaseResponse> {
+        const question = await this.repository.findById(questionId)
+
+        if (!question) {
+            throw new Error('Question not found.')
+        }
+
+        if (authorId !== question.authorId.toString) {
+            throw new Error('Not allowed.')
+        }
+
+        question.title = title
+        question.content = content
+
+        await this.repository.save(question)
+
+        return {}
+    }
+
+
 
     // public async answerQuestion({ instructorId, questionId, content }: answerQuestionRequest): Promise<Answer> {
     //     const answer = new Answer({ content, authorId: instructorId, questionId })

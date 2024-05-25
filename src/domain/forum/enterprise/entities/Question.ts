@@ -1,6 +1,6 @@
 import dayjs from "dayjs"
-import { BaseEntity } from "src/core/entities/BaseEntity" 
-import { EntityID } from "src/core/entities/EntityID" 
+import { BaseEntity } from "src/core/entities/BaseEntity"
+import { EntityID } from "src/core/entities/EntityID"
 import { Slug } from "./value-objects/Slug"
 
 export interface QuestionModel {
@@ -52,6 +52,11 @@ export class Question extends BaseEntity<QuestionModel> {
     set title(title: string) {
         this.properties.title = title
         this.properties.slug = Slug.createFromText(title)
+        this.setUpdate()
+    }
+
+    set content(content: string) {
+        this.properties.content = content
         this.setUpdate()
     }
 
