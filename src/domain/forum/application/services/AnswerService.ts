@@ -16,12 +16,27 @@ interface EditAnswerUseCaseResponse {
     answer: Answer
 }
 
+interface findAnswerByIdRequest {
+    answerId: string
+}
+
+interface findAnswerByIdResponse {
+    answer: Answer
+}
+
+
 
 interface DeleteAnswerUseCaseResponse { }
 
 export class AnswerService {
 
     constructor(private answersRepository: IAnswerRepository) { }
+
+    async findById({ answerId }: findAnswerByIdRequest): Promise<findAnswerByIdResponse> {
+        const answer = await this.answersRepository.findById(answerId)
+        if (!answer) throw new Error("Answer not found")
+        return { answer }
+    }
 
     async updateResponse({ authorId, answerId, content, }: EditAnswerUseCaseRequest): Promise<EditAnswerUseCaseResponse> {
         const answer = await this.answersRepository.findById(answerId)

@@ -3,6 +3,7 @@ import { Question } from "../../enterprise/entities/Question";
 import { Slug } from "../../enterprise/entities/value-objects/Slug";
 import { title } from "process";
 import { IQuestionsRepository } from "../../repositories/interfaces/IQuestionRepository";
+import { AnswerService } from "./AnswerService";
 
 interface createQuestionRequest {
     authorId: string;
@@ -36,8 +37,17 @@ interface EditQuestionUseCaseRequest {
 
 interface EditQuestionUseCaseResponse { }
 
+interface markBestAnswerRequest {
+    authorId: string
+    answerId: string
+}
+
+interface markBestAnswerResponse {
+    question: Question
+}
+
 export class QuestionService {
-    constructor(private repository: IQuestionsRepository) { }
+    constructor(private repository: IQuestionsRepository, private answersService: AnswerService) { }
 
     public async createQuestion(req: createQuestionRequest): Promise<CreateQuestionResponse> {
         const question = new Question({
@@ -94,6 +104,30 @@ export class QuestionService {
         await this.repository.save(question)
 
         return {}
+    }
+
+    async markBestAnswer({ answerId, authorId }: markBestAnswerRequest): Promise<markBestAnswerResponse> {
+        const { answer } = await this.answersService.findById({ answerId })
+
+        if (!answer) {
+            throw new Error('Answer not found.')
+        }
+
+        const question = await this.repository.findById(answer.Id.toString)
+
+        if (!question) {
+            throw new Error('Question not found.')
+        }
+
+        if (authorId !== question.authorId.toString) {
+            throw new Error('Not allowed.')
+        }
+
+        question.bestAnswerId = answer.Id
+
+        await this.repository.save(question)
+
+        return { question }
     }
 
 
