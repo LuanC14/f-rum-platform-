@@ -129,12 +129,4 @@ export class QuestionService {
 
         return { question }
     }
-
-
-
-    // public async answerQuestion({ instructorId, questionId, content }: answerQuestionRequest): Promise<Answer> {
-    //     const answer = new Answer({ content, authorId: instructorId, questionId })
-
-    //     return await this.answerRepository.create(answer);
-    // }
 }

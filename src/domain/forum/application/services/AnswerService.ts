@@ -1,5 +1,13 @@
+import { EntityID } from "src/core/entities/EntityID"
 import { Answer } from "../../enterprise/entities/Answer"
 import { IAnswerRepository } from "../../repositories/interfaces/IAnswerRepository"
+
+interface createAnswerUseCaseRequest {
+    instructorId: string
+    questionId: string
+    content: string
+}
+
 
 interface DeleteAnswerUseCaseRequest {
     authorId: string
@@ -24,13 +32,21 @@ interface findAnswerByIdResponse {
     answer: Answer
 }
 
-
-
 interface DeleteAnswerUseCaseResponse { }
 
 export class AnswerService {
 
     constructor(private answersRepository: IAnswerRepository) { }
+
+    public async createAnswer({ instructorId, questionId, content }: createAnswerUseCaseRequest): Promise<Answer> {
+        const answer = new Answer({
+            content,
+            authorId: new EntityID(instructorId),
+            questionId: new EntityID(questionId),
+            createdAt: new Date()
+        })
+        return await this.answersRepository.create(answer);
+    }
 
     async findById({ answerId }: findAnswerByIdRequest): Promise<findAnswerByIdResponse> {
         const answer = await this.answersRepository.findById(answerId)

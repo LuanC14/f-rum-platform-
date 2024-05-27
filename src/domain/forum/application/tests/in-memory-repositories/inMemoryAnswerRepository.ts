@@ -6,6 +6,7 @@ export class InMemoryAnswersRepository implements IAnswerRepository {
 
   async create(answer: Answer) {
     this.items.push(answer)
+    return answer
   }
 
   async save(answer: Answer) {
