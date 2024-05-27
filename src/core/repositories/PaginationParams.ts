@@ -1,0 +1,3 @@
+interface PaginationParams {
+    page: number
+}

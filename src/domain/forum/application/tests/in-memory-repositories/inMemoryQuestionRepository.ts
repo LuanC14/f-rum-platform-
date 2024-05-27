@@ -24,6 +24,14 @@ export class InMemoryQuestionsRepository implements IQuestionsRepository {
     return question ?? null
   }
 
+  async findManyRecent({page}: PaginationParams): Promise<Question[]> {
+    const questions = this.items
+      .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+      .slice((page - 1) * 20, page * 20 ) 
+
+      return questions
+  }
+
   async delete(question: Question) {
     const itemIndex = this.items.findIndex((item) => item.Id === question.Id)
     this.items.splice(itemIndex, 1)

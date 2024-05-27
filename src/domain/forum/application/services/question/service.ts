@@ -1,15 +1,22 @@
-import CreateQuestionRequest from "./contracts/createQuestionRequest";
+import CreateQuestionRequest from "./contracts/CreateQuestionRequest";
 import CreateQuestionResponse from "./contracts/CreateQuestionResponse";
 import GetQuestionBySlugRequest from "./contracts/GetQuestionBySlugRequest";
 import GetQuestionBySlugResponse from "./contracts/GetQuestionBySlugResponse";
-import MarkBestAnswerResponse from "./contracts/markBestAnswerResponse";
+import MarkBestAnswerResponse from "./contracts/MarkBestAnswerResponse";
 
 import { EntityID } from "src/core/entities/EntityID";
 import { Question } from "../../../enterprise/entities/Question";
 import { Slug } from "../../../enterprise/entities/value-objects/Slug";
-import { title } from "process";
 import { IQuestionsRepository } from "../../../repositories/interfaces/IQuestionRepository";
 import { AnswerService } from "../answer/service";
+
+interface FetchRecentQuestionsRequest {
+    page: number
+}
+
+interface FetchRecentQuestionsResponse {
+    questions: Question[]
+}
 
 export class QuestionService {
     constructor(private repository: IQuestionsRepository, private answersService: AnswerService) { }
@@ -19,13 +26,21 @@ export class QuestionService {
             authorId: new EntityID(req.authorId),
             title: req.title,
             content: req.content,
-            slug: Slug.createFromText(title),
+            slug: Slug.createFromText(req.title),
             createdAt: new Date(),
         });
 
         this.repository.create(question);
 
         return { question };
+    }
+
+    public async fetchRecentQuestions({ page }: FetchRecentQuestionsRequest): Promise<FetchRecentQuestionsResponse> {
+        const questions = await this.repository.findManyRecent({ page })
+
+
+
+        return { questions };
     }
 
     async findBySlug({ slug }: GetQuestionBySlugRequest): Promise<GetQuestionBySlugResponse> {
