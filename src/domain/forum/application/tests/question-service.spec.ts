@@ -1,5 +1,5 @@
 import { InMemoryQuestionsRepository } from "./in-memory-repositories/inMemoryQuestionRepository"
-import { QuestionService } from "../services/QuestionService"
+import { QuestionService } from "../services/question/service"
 import { describe, beforeEach, it, expect } from 'vitest'
 import { Slug } from "../../enterprise/entities/value-objects/Slug"
 import { makeQuestion } from "./factories/make-question"

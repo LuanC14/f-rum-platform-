@@ -1,55 +1,20 @@
+import CreateQuestionRequest from "./contracts/createQuestionRequest";
+import CreateQuestionResponse from "./contracts/CreateQuestionResponse";
+import GetQuestionBySlugRequest from "./contracts/GetQuestionBySlugRequest";
+import GetQuestionBySlugResponse from "./contracts/GetQuestionBySlugResponse";
+import MarkBestAnswerResponse from "./contracts/markBestAnswerResponse";
+
 import { EntityID } from "src/core/entities/EntityID";
-import { Question } from "../../enterprise/entities/Question";
-import { Slug } from "../../enterprise/entities/value-objects/Slug";
+import { Question } from "../../../enterprise/entities/Question";
+import { Slug } from "../../../enterprise/entities/value-objects/Slug";
 import { title } from "process";
-import { IQuestionsRepository } from "../../repositories/interfaces/IQuestionRepository";
-import { AnswerService } from "./AnswerService";
-
-interface createQuestionRequest {
-    authorId: string;
-    title: string;
-    content: string;
-}
-
-interface CreateQuestionResponse {
-    question: Question;
-}
-
-interface GetQuestionBySlugRequest {
-    slug: string;
-}
-
-interface GetQuestionBySlugResponse {
-    question: Question;
-}
-
-interface DeleteQuestionUseCaseRequest {
-    authorId: string;
-    questionId: string;
-}
-
-interface EditQuestionUseCaseRequest {
-    authorId: string
-    questionId: string
-    title: string
-    content: string
-}
-
-interface EditQuestionUseCaseResponse { }
-
-interface markBestAnswerRequest {
-    authorId: string
-    answerId: string
-}
-
-interface markBestAnswerResponse {
-    question: Question
-}
+import { IQuestionsRepository } from "../../../repositories/interfaces/IQuestionRepository";
+import { AnswerService } from "../answer/service";
 
 export class QuestionService {
     constructor(private repository: IQuestionsRepository, private answersService: AnswerService) { }
 
-    public async createQuestion(req: createQuestionRequest): Promise<CreateQuestionResponse> {
+    public async createQuestion(req: CreateQuestionRequest): Promise<CreateQuestionResponse> {
         const question = new Question({
             authorId: new EntityID(req.authorId),
             title: req.title,
@@ -73,7 +38,7 @@ export class QuestionService {
         return { question };
     }
 
-    async deleteQuestion({ questionId, authorId }: DeleteQuestionUseCaseRequest) {
+    async deleteQuestion({ questionId, authorId }: DeleteQuestionRequest) {
         const question = await this.repository.findById(questionId);
 
         if (!question) {
@@ -106,7 +71,7 @@ export class QuestionService {
         return {}
     }
 
-    async markBestAnswer({ answerId, authorId }: markBestAnswerRequest): Promise<markBestAnswerResponse> {
+    async markBestAnswer({ answerId, authorId }: MarkBestAnswerRequest): Promise<MarkBestAnswerResponse> {
         const { answer } = await this.answersService.findById({ answerId })
 
         if (!answer) {
