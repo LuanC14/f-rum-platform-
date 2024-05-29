@@ -5,6 +5,8 @@ import EditAnswerRequest from "./contracts/EditAnswerRequest";
 import EditAnswerResponse from "./contracts/EditAnswerResponse";
 import DeleteAnswerRequest from "./contracts/DeleteAnswerRequest";
 import DeleteAnswerResponse from "./contracts/DeleteAnswerResponse";
+import FetchQuestionAnswersRequest from "./contracts/FetchQuestionAnswersRequest";
+import FetchQuestionAnswersResponse from "./contracts/FetchQuestionAnswersResponse";
 
 import { EntityID } from "src/core/entities/EntityID"
 import { Answer } from "src/domain/forum/enterprise/entities/Answer";
@@ -14,7 +16,7 @@ export class AnswerService {
 
     constructor(private answersRepository: IAnswerRepository) { }
 
-    public async createAnswer({ instructorId, questionId, content }: CreateAnswerRequest ): Promise<Answer> {
+    public async createAnswer({ instructorId, questionId, content }: CreateAnswerRequest): Promise<Answer> {
         const answer = new Answer({
             content,
             authorId: new EntityID(instructorId),
@@ -28,6 +30,11 @@ export class AnswerService {
         const answer = await this.answersRepository.findById(answerId)
         if (!answer) throw new Error("Answer not found")
         return { answer }
+    }
+
+    async fetchAnswersByQuestionId({ questionId, page, }: FetchQuestionAnswersRequest): Promise<FetchQuestionAnswersResponse> {
+        const answers = await this.answersRepository.findManyByQuestionId(questionId, { page })
+        return { answers }
     }
 
     async updateResponse({ authorId, answerId, content, }: EditAnswerRequest): Promise<EditAnswerResponse> {
