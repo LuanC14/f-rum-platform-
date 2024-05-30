@@ -4,6 +4,11 @@ import CommentOnAnswerResponse from "./contracts/CommentOnAnswerResponse"
 import DeleteQuestionCommentRequest from "./contracts/DeleteQuestionCommentRequest"
 import DeleteQuestionCommentResponse from "./contracts/DeleteQuestionCommentResponse"
 import CommentOnAnswerRequest from "./contracts/CommentOnAnswerRequest"
+import DeleteAnswerCommentRequest from "./contracts/DeleteAnswerCommentRequest"
+import DeleteAnswerCommentResponse from "./contracts/DeleteAnswerCommentResponse"
+import FetchQuestionCommentsRequest from "./contracts/FetchQuestionCommentsRequest"
+import FetchCommentsResponse from "./contracts/FetchCommentsResponse"
+import FetchAnswerCommentsRequest from "./contracts/FetchAnswerCommentsRequest"
 
 import { AnswerComment } from "src/domain/forum/enterprise/AnswerComments"
 import { EntityID } from "src/core/entities/EntityID"
@@ -11,14 +16,6 @@ import { QuestionComment } from "src/domain/forum/enterprise/QuestionComment"
 import { QuestionService } from "../question/service"
 import { ICommentRepository } from "src/domain/forum/repositories/interfaces/ICommentRepository"
 import { AnswerService } from "../answer/service"
-import DeleteAnswerCommentRequest from "./contracts/DeleteAnswerCommentRequest"
-import DeleteAnswerCommentResponse from "./contracts/DeleteAnswerCommentResponse"
-
-
-
-
-
-
 
 export class CommentService {
 
@@ -89,5 +86,15 @@ export class CommentService {
         await this.repository.delete(answerComment)
 
         return {}
+    }
+
+    async fetchQuestionsComments({ questionId, page }: FetchQuestionCommentsRequest): Promise<FetchCommentsResponse> {
+        const questionComments = await this.repository.findManyByFatherCommentId(questionId, { page })
+        return { comments: questionComments }
+    }
+
+    async fetchAnswersComments({ answerId, page }: FetchAnswerCommentsRequest): Promise<FetchCommentsResponse> {
+        const answerComments = await this.repository.findManyByFatherCommentId(answerId, { page })
+        return { comments: answerComments }
     }
 }
