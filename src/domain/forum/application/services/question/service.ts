@@ -18,6 +18,15 @@ interface FetchRecentQuestionsResponse {
     questions: Question[]
 }
 
+interface FindQuestionByIdRequest {
+    questionId: string
+}
+
+interface FindQuestionByIdResponse {
+    question: Question
+}
+
+
 export class QuestionService {
     constructor(private repository: IQuestionsRepository, private answersService: AnswerService) { }
 
@@ -35,11 +44,14 @@ export class QuestionService {
         return { question };
     }
 
+    public async findById({ questionId }: FindQuestionByIdRequest): Promise<FindQuestionByIdResponse> {
+        const question = await this.repository.findById(questionId)
+        if (!question) throw new Error("Question not found")
+        return { question }
+    }
+
     public async fetchRecentQuestions({ page }: FetchRecentQuestionsRequest): Promise<FetchRecentQuestionsResponse> {
         const questions = await this.repository.findManyRecent({ page })
-
-
-
         return { questions };
     }
 
