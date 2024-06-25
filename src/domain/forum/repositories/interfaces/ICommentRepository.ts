@@ -1,5 +1,5 @@
-import { AnswerComment } from "../../enterprise/AnswerComments";
-import { QuestionComment } from "../../enterprise/QuestionComment";
+import { AnswerComment } from "../../enterprise/entities/AnswerComments";
+import { QuestionComment } from "../../enterprise/entities/QuestionComment";
 
 export type comment = QuestionComment | AnswerComment
 

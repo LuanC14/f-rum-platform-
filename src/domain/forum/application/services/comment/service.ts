@@ -10,12 +10,12 @@ import FetchQuestionCommentsRequest from "./contracts/FetchQuestionCommentsReque
 import FetchCommentsResponse from "./contracts/FetchCommentsResponse"
 import FetchAnswerCommentsRequest from "./contracts/FetchAnswerCommentsRequest"
 
-import { AnswerComment } from "src/domain/forum/enterprise/AnswerComments"
 import { EntityID } from "src/core/entities/EntityID"
-import { QuestionComment } from "src/domain/forum/enterprise/QuestionComment"
+import { QuestionComment } from "src/domain/forum/enterprise/entities/QuestionComment"
 import { QuestionService } from "../question/service"
 import { ICommentRepository } from "src/domain/forum/repositories/interfaces/ICommentRepository"
 import { AnswerService } from "../answer/service"
+import { AnswerComment } from "src/domain/forum/enterprise/entities/AnswerComments"
 
 export class CommentService {
 

@@ -12,6 +12,8 @@ import { EntityID } from "src/core/entities/EntityID"
 import { Answer } from "src/domain/forum/enterprise/entities/Answer";
 import { IAnswerRepository } from "src/domain/forum/repositories/interfaces/IAnswerRepository";
 import { left, right } from "src/core/utils/either";
+import { ResourceNotFoundError } from "../../errors/ResourceNotFoundError";
+import { NotAllowedError } from "../../errors/NotAllowedError";
 
 export class AnswerService {
 
@@ -60,11 +62,11 @@ export class AnswerService {
         const answer = await this.answersRepository.findById(answerId)
 
         if (!answer) {
-            return left('Answer not found.')
+            return left(new ResourceNotFoundError())
         }
 
         if (authorId !== answer.authorId.toString) {
-            return left('Not allowed.')
+            return left(new NotAllowedError())
         }
 
         await this.answersRepository.delete(answer)
