@@ -11,6 +11,7 @@ import FetchQuestionAnswersResponse from "./contracts/FetchQuestionAnswersRespon
 import { EntityID } from "src/core/entities/EntityID"
 import { Answer } from "src/domain/forum/enterprise/entities/Answer";
 import { IAnswerRepository } from "src/domain/forum/repositories/interfaces/IAnswerRepository";
+import { left, right } from "src/core/utils/either";
 
 export class AnswerService {
 
@@ -59,15 +60,15 @@ export class AnswerService {
         const answer = await this.answersRepository.findById(answerId)
 
         if (!answer) {
-            throw new Error('Answer not found.')
+            return left('Answer not found.')
         }
 
         if (authorId !== answer.authorId.toString) {
-            throw new Error('Not allowed.')
+            return left('Not allowed.')
         }
 
         await this.answersRepository.delete(answer)
 
-        return {}
+        return right({})
     }
 }
