@@ -1,4 +1,5 @@
-import CreateAnswerRequest from "./contracts/CreateAnswerRequest";
+import CreateAnswerOnQuestionRequest from "./contracts/CreateAnswerOnQuestionRequest";
+import CreateAnswerOnQuestionResponse from "./contracts/CreateAnswerOnQuestionResponse";
 import FindAnswerByIdRequest from "./contracts/FindAnswerByIdRequest";
 import FindAnswerByIdResponse from "./contracts/FindAnswerByIdResponse";
 import EditAnswerRequest from "./contracts/EditAnswerRequest";
@@ -11,22 +12,26 @@ import FetchQuestionAnswersResponse from "./contracts/FetchQuestionAnswersRespon
 import { EntityID } from "src/core/entities/EntityID"
 import { Answer } from "src/domain/forum/enterprise/entities/Answer";
 import { IAnswerRepository } from "src/domain/forum/repositories/interfaces/IAnswerRepository";
-import { left, right } from "src/core/utils/either";
+import { left, Right, right } from "src/core/utils/either";
 import { ResourceNotFoundError } from "../../errors/ResourceNotFoundError";
 import { NotAllowedError } from "../../errors/NotAllowedError";
+
 
 export class AnswerService {
 
     constructor(private answersRepository: IAnswerRepository) { }
 
-    public async createAnswer({ instructorId, questionId, content }: CreateAnswerRequest): Promise<Answer> {
+    public async createAnswerOnQuestion({ instructorId, questionId, content }: CreateAnswerOnQuestionRequest): Promise<CreateAnswerOnQuestionResponse> {
         const answer = new Answer({
             content,
             authorId: new EntityID(instructorId),
             questionId: new EntityID(questionId),
             createdAt: new Date()
         })
-        return await this.answersRepository.create(answer);
+
+        this.answersRepository.create(answer)
+
+        return new Right({answer});
     }
 
     async findById({ answerId }: FindAnswerByIdRequest): Promise<FindAnswerByIdResponse> {
