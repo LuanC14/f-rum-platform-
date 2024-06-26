@@ -31,36 +31,35 @@ export class AnswerService {
 
         this.answersRepository.create(answer)
 
-        return new Right({answer});
+        return new Right({ answer });
     }
 
     async findById({ answerId }: FindAnswerByIdRequest): Promise<FindAnswerByIdResponse> {
         const answer = await this.answersRepository.findById(answerId)
-        if (!answer) throw new Error("Answer not found")
-        return { answer }
+        return right({ answer })
     }
 
     async fetchAnswersByQuestionId({ questionId, page, }: FetchQuestionAnswersRequest): Promise<FetchQuestionAnswersResponse> {
         const answers = await this.answersRepository.findManyByQuestionId(questionId, { page })
-        return { answers }
+        return right({ answers })
     }
 
     async updateResponse({ authorId, answerId, content, }: EditAnswerRequest): Promise<EditAnswerResponse> {
         const answer = await this.answersRepository.findById(answerId)
 
         if (!answer) {
-            throw new Error('Answer not found.')
+            return left(new ResourceNotFoundError())
         }
 
         if (authorId !== answer.authorId.toString) {
-            throw new Error('Not allowed.')
+            return left(new NotAllowedError())
         }
 
         answer.content = content
 
         await this.answersRepository.save(answer)
 
-        return { answer }
+        return right({ answer })
     }
 
     async deleteAnswer({ answerId, authorId }: DeleteAnswerRequest): Promise<DeleteAnswerResponse> {

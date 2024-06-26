@@ -9,6 +9,10 @@ import { Question } from "../../../enterprise/entities/Question";
 import { Slug } from "../../../enterprise/entities/value-objects/Slug";
 import { IQuestionsRepository } from "../../../repositories/interfaces/IQuestionRepository";
 import { AnswerService } from "../answer/service";
+import { left, right, Right } from "src/core/utils/either";
+import { ResourceNotFoundError } from "../../errors/ResourceNotFoundError";
+import { NotAllowedError } from "../../errors/NotAllowedError";
+import EditQuestionUseCaseResponse from "./contracts/EditQuestionResponse";
 
 interface FetchRecentQuestionsRequest {
     page: number
@@ -41,7 +45,7 @@ export class QuestionService {
 
         this.repository.create(question);
 
-        return { question };
+        return right({question})
     }
 
     public async findById({ questionId }: FindQuestionByIdRequest): Promise<FindQuestionByIdResponse> {
@@ -59,10 +63,10 @@ export class QuestionService {
         const question = await this.repository.findBySlug(slug);
 
         if (!question) {
-            throw new Error("Question not found.");
+            return left(new ResourceNotFoundError())
         }
 
-        return { question };
+        return right({question})
     }
 
     async deleteQuestion({ questionId, authorId }: DeleteQuestionRequest) {
@@ -83,11 +87,11 @@ export class QuestionService {
         const question = await this.repository.findById(questionId)
 
         if (!question) {
-            throw new Error('Question not found.')
+            return left(new ResourceNotFoundError())
         }
 
         if (authorId !== question.authorId.toString) {
-            throw new Error('Not allowed.')
+            return left(new NotAllowedError())
         }
 
         question.title = title
@@ -95,30 +99,30 @@ export class QuestionService {
 
         await this.repository.save(question)
 
-        return {}
+        return right({question})
     }
 
     async markBestAnswer({ answerId, authorId }: MarkBestAnswerRequest): Promise<MarkBestAnswerResponse> {
         const { answer } = await this.answersService.findById({ answerId })
 
         if (!answer) {
-            throw new Error('Answer not found.')
+            return left(new ResourceNotFoundError())
         }
 
         const question = await this.repository.findById(answer.Id.toString)
 
         if (!question) {
-            throw new Error('Question not found.')
+            return left(new ResourceNotFoundError())
         }
 
         if (authorId !== question.authorId.toString) {
-            throw new Error('Not allowed.')
+            return left(new NotAllowedError())
         }
 
         question.bestAnswerId = answer.Id
 
         await this.repository.save(question)
 
-        return { question }
+        return right({ question })
     }
 }

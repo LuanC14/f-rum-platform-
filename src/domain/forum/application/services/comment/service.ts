@@ -16,6 +16,9 @@ import { QuestionService } from "../question/service"
 import { ICommentRepository } from "src/domain/forum/repositories/interfaces/ICommentRepository"
 import { AnswerService } from "../answer/service"
 import { AnswerComment } from "src/domain/forum/enterprise/entities/AnswerComments"
+import { left, right } from "src/core/utils/either"
+import { ResourceNotFoundError } from "../../errors/ResourceNotFoundError"
+import { NotAllowedError } from "../../errors/NotAllowedError"
 
 export class CommentService {
 
@@ -28,7 +31,9 @@ export class CommentService {
     async createCommentOnQuestion({ authorId, questionId, content, }: CommentOnQuestionRequest): Promise<CommentOnQuestionResponse> {
         const question = await this.questionService.findById({ questionId })
 
-        if (!question) throw new Error('Question not found.')
+        if (!question) {
+            return left(new ResourceNotFoundError())
+        }
 
         const questionComment = new QuestionComment({
             authorId: new EntityID(authorId),
@@ -39,13 +44,16 @@ export class CommentService {
 
         await this.repository.create(questionComment)
 
-        return { questionComment }
+        return right({ questionComment })
     }
 
     async createCommentOnAnswer({ authorId, answerId, content, }: CommentOnAnswerRequest): Promise<CommentOnAnswerResponse> {
         const answer = await this.answerService.findById({ answerId })
 
-        if (!answer) throw new Error('answer not found.')
+        if (!answer) {
+            return left(new ResourceNotFoundError())
+        }
+
 
         const answerComment = new AnswerComment({
             authorId: new EntityID(authorId),
@@ -57,44 +65,48 @@ export class CommentService {
 
         await this.repository.create(answerComment)
 
-        return { answerComment }
+        return right({ answerComment })
     }
 
     async deleteQuestionComment({ authorId, questionCommentId }: DeleteQuestionCommentRequest): Promise<DeleteQuestionCommentResponse> {
         const questionComment = await this.repository.findById(questionCommentId)
 
         if (!questionComment) {
-            throw new Error('Question comment not found.')
+            return left(new ResourceNotFoundError())
         }
 
         if (questionComment.authorId.toString !== authorId) {
-            throw new Error('Not allowed')
+            return left(new NotAllowedError())
         }
 
         await this.repository.delete(questionComment)
 
-        return {}
+        return right({})
     }
 
     async deleteAnswerComment({ authorId, answerCommentId }: DeleteAnswerCommentRequest): Promise<DeleteAnswerCommentResponse> {
         const answerComment = await this.repository.findById(answerCommentId)
 
-        if (!answerComment) throw new Error('Answer comment not found.')
+        if (!answerComment) {
+            return left(new ResourceNotFoundError())
+        }
 
-        if (answerComment.authorId.toString !== authorId) throw new Error('Not allowed')
+        if (answerComment.authorId.toString !== authorId) {
+            return left(new NotAllowedError())
+        }
 
         await this.repository.delete(answerComment)
 
-        return {}
+        return right({})
     }
 
     async fetchQuestionsComments({ questionId, page }: FetchQuestionCommentsRequest): Promise<FetchCommentsResponse> {
         const questionComments = await this.repository.findManyByFatherCommentId(questionId, { page })
-        return { comments: questionComments }
+        return right({ comments: questionComments })
     }
 
     async fetchAnswersComments({ answerId, page }: FetchAnswerCommentsRequest): Promise<FetchCommentsResponse> {
         const answerComments = await this.repository.findManyByFatherCommentId(answerId, { page })
-        return { comments: answerComments }
+        return right({ comments: answerComments })
     }
 }
