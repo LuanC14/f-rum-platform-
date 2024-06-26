@@ -1,8 +1,6 @@
-import { BaseEntity } from "src/core/entities/BaseEntity" 
-import { EntityID } from "src/core/entities/EntityID" 
+import { BaseEntity, EntityModel } from "src/core/entities/BaseEntity" 
 
-interface StudentModel {
-    id?: EntityID
+interface StudentModel extends EntityModel {
     name: string
 }
 

@@ -1,8 +1,7 @@
-import { BaseEntity } from "src/core/entities/BaseEntity";
+import { BaseEntity, EntityModel } from "src/core/entities/BaseEntity";
 import { EntityID } from "src/core/entities/EntityID";
 
-export interface AnswerCommentModel {
-    id?: EntityID
+export interface AnswerCommentModel extends EntityModel {
     authorId: EntityID
     answerId: EntityID
     content: string

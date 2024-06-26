@@ -1,10 +1,9 @@
 import dayjs from "dayjs"
-import { BaseEntity } from "src/core/entities/BaseEntity"
+import { BaseEntity, EntityModel } from "src/core/entities/BaseEntity"
 import { EntityID } from "src/core/entities/EntityID"
 import { Slug } from "./value-objects/Slug"
 
-export interface QuestionModel {
-    id?: EntityID
+export interface QuestionModel extends EntityModel {
     title: string
     slug: Slug
     content: string

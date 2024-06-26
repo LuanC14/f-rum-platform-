@@ -1,6 +1,6 @@
 import { EntityID } from "./EntityID"
 
-interface EntityModel {
+export interface EntityModel {
     id?: EntityID
 }
 

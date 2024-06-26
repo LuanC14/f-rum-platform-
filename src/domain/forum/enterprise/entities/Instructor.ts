@@ -1,8 +1,7 @@
-import { BaseEntity } from "src/core/entities/BaseEntity" 
+import { BaseEntity, EntityModel } from "src/core/entities/BaseEntity" 
 import { EntityID } from "src/core/entities/EntityID" 
 
-export interface InstructorModel {
-    id?: EntityID
+export interface InstructorModel extends EntityModel {
     name: string
 }
 
