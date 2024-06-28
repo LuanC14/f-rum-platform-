@@ -1,7 +1,9 @@
 import dayjs from "dayjs"
-import { BaseEntity, EntityModel } from "src/core/entities/BaseEntity"
+import { EntityModel } from "src/core/entities/BaseEntity"
 import { EntityID } from "src/core/entities/EntityID"
 import { Slug } from "./value-objects/Slug"
+import { AggregateRoot } from "src/core/entities/AggregateRoot"
+import { QuestionAttachment } from "./QuestionAttachment"
 
 export interface QuestionModel extends EntityModel {
     title: string
@@ -9,11 +11,12 @@ export interface QuestionModel extends EntityModel {
     content: string
     authorId: EntityID
     bestAnswerID?: EntityID
+    attachments?: QuestionAttachment[]
     createdAt: Date
     updatedAt?: Date
 }
 
-export class Question extends BaseEntity<QuestionModel> {
+export class Question extends AggregateRoot<QuestionModel> {
     get title(): string {
         return this.properties.title
     }
@@ -25,6 +28,14 @@ export class Question extends BaseEntity<QuestionModel> {
     }
     get authorId(): EntityID {
         return this.properties.authorId
+    }
+
+    get bestAnswerID() {
+        return this.properties.bestAnswerID ?? null
+    }
+
+    get attachments() {
+        return this.properties.attachments ?? []
     }
 
     get createdAt() {
@@ -62,6 +73,10 @@ export class Question extends BaseEntity<QuestionModel> {
     set bestAnswerId(bestAnswerId: EntityID) {
         this.properties.bestAnswerID = bestAnswerId
         this.setUpdate()
+    }
+
+    set attachments(attachments: QuestionAttachment[]) {
+        this.properties.attachments = attachments
     }
 
     private setUpdate() {
