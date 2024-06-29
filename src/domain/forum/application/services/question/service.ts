@@ -9,10 +9,11 @@ import { Question } from "../../../enterprise/entities/Question";
 import { Slug } from "../../../enterprise/entities/value-objects/Slug";
 import { IQuestionsRepository } from "../../../repositories/interfaces/IQuestionRepository";
 import { AnswerService } from "../answer/service";
-import { left, right, Right } from "src/core/utils/either";
+import { left, right } from "src/core/utils/either";
 import { ResourceNotFoundError } from "../../errors/ResourceNotFoundError";
 import { NotAllowedError } from "../../errors/NotAllowedError";
 import EditQuestionUseCaseResponse from "./contracts/EditQuestionResponse";
+import { QuestionAttachment } from "src/domain/forum/enterprise/entities/QuestionAttachment";
 
 interface FetchRecentQuestionsRequest {
     page: number
@@ -43,9 +44,20 @@ export class QuestionService {
             createdAt: new Date(),
         });
 
+        if (req.attachmentsIds) {
+            const attachments = req.attachmentsIds.map(id => {
+                return new QuestionAttachment({
+                    attachmentId: new EntityID(id),
+                    questionId: question.Id
+
+                })
+            })
+            question.attachments = attachments
+        }
+
         this.repository.create(question);
 
-        return right({question})
+        return right({ question })
     }
 
     public async findById({ questionId }: FindQuestionByIdRequest): Promise<FindQuestionByIdResponse> {
@@ -66,7 +78,7 @@ export class QuestionService {
             return left(new ResourceNotFoundError())
         }
 
-        return right({question})
+        return right({ question })
     }
 
     async deleteQuestion({ questionId, authorId }: DeleteQuestionRequest) {
@@ -99,15 +111,17 @@ export class QuestionService {
 
         await this.repository.save(question)
 
-        return right({question})
+        return right({ question })
     }
 
     async markBestAnswer({ answerId, authorId }: MarkBestAnswerRequest): Promise<MarkBestAnswerResponse> {
-        const { answer } = await this.answersService.findById({ answerId })
+        const { value } = await this.answersService.findById({ answerId })
 
-        if (!answer) {
+        if (!value?.answer) {
             return left(new ResourceNotFoundError())
         }
+
+        const answer = value.answer
 
         const question = await this.repository.findById(answer.Id.toString)
 
