@@ -1,10 +1,12 @@
-import { BaseEntity, EntityModel } from "src/core/entities/BaseEntity" 
-import { EntityID } from "src/core/entities/EntityID" 
+import { BaseEntity, EntityModel } from "src/core/entities/BaseEntity"
+import { EntityID } from "src/core/entities/EntityID"
+import { AnswerAttachmentList } from "./watched-lists/AnswerAttachmentList"
 
 export interface AnswerModel extends EntityModel {
     content: string
     authorId: EntityID
     questionId: EntityID
+    attachments: AnswerAttachmentList
     createdAt: Date
     updatedAt?: Date
 }
@@ -28,6 +30,10 @@ export class Answer extends BaseEntity<AnswerModel> {
         return this.properties.updatedAt
     }
 
+    get AnswerAttachmentList() {
+        return this.properties.attachments ?? new AnswerAttachmentList()
+    }
+
     get resume() {
         return this.content
             .substring(0, 120)
@@ -37,6 +43,11 @@ export class Answer extends BaseEntity<AnswerModel> {
 
     set content(content: string) {
         this.properties.content = content
+        this.setUpdate()
+    }
+
+    set attachments(attachments: AnswerAttachmentList) {
+        this.properties.attachments = attachments
         this.setUpdate()
     }
 

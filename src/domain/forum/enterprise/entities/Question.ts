@@ -77,6 +77,7 @@ export class Question extends AggregateRoot<QuestionModel> {
 
     set attachments(attachments: QuestionAttachmentList) {
         this.properties.attachments = attachments
+        this.setUpdate()
     }
 
     private setUpdate() {

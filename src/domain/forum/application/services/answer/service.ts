@@ -15,19 +15,33 @@ import { IAnswerRepository } from "src/domain/forum/repositories/interfaces/IAns
 import { left, Right, right } from "src/core/utils/either";
 import { ResourceNotFoundError } from "../../errors/ResourceNotFoundError";
 import { NotAllowedError } from "../../errors/NotAllowedError";
+import { AnswerAttachment } from "src/domain/forum/enterprise/entities/AnswerAttachment";
+import { AnswerAttachmentList } from "src/domain/forum/enterprise/entities/watched-lists/AnswerAttachmentList";
+import { IAnswerAttachmentsRepository } from "src/domain/forum/repositories/IAnswerAttachmentsRepository";
 
 
 export class AnswerService {
 
-    constructor(private answersRepository: IAnswerRepository) { }
+    constructor(private answersRepository: IAnswerRepository,
+        private answerAttachmentsRepository: IAnswerAttachmentsRepository) { }
 
-    public async createAnswerOnQuestion({ instructorId, questionId, content }: CreateAnswerOnQuestionRequest): Promise<CreateAnswerOnQuestionResponse> {
+    public async createAnswerOnQuestion({ instructorId, questionId, content, attachmentsIds }: CreateAnswerOnQuestionRequest): Promise<CreateAnswerOnQuestionResponse> {
         const answer = new Answer({
             content,
             authorId: new EntityID(instructorId),
             questionId: new EntityID(questionId),
+            attachments: new AnswerAttachmentList(),
             createdAt: new Date()
         })
+
+        const answerAttachments = attachmentsIds.map((attachmentId) => {
+            return new AnswerAttachment({
+                attachmentId: new EntityID(attachmentId),
+                answerId: answer.Id
+            })
+        })
+
+        answer.attachments = new AnswerAttachmentList(answerAttachments)
 
         this.answersRepository.create(answer)
 
@@ -44,7 +58,7 @@ export class AnswerService {
         return right({ answers })
     }
 
-    async updateResponse({ authorId, answerId, content, }: EditAnswerRequest): Promise<EditAnswerResponse> {
+    async updateAnswer({ authorId, answerId, content, attachmentsIds }: EditAnswerRequest): Promise<EditAnswerResponse> {
         const answer = await this.answersRepository.findById(answerId)
 
         if (!answer) {
@@ -54,6 +68,24 @@ export class AnswerService {
         if (authorId !== answer.authorId.toString) {
             return left(new NotAllowedError())
         }
+
+        const currentAnswerAttachments =
+            await this.answerAttachmentsRepository.findManyByAnswerId(answerId)
+
+        const answerAttachmentList = new AnswerAttachmentList(
+            currentAnswerAttachments,
+        )
+
+        const answerAttachments = attachmentsIds.map((attachmentId) => {
+            return new AnswerAttachment({
+                attachmentId: new EntityID(attachmentId),
+                answerId: answer.Id,
+            })
+        })
+
+        answerAttachmentList.update(answerAttachments)
+
+        answer.attachments = answerAttachmentList
 
         answer.content = content
 
