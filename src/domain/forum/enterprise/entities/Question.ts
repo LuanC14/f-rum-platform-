@@ -3,7 +3,7 @@ import { EntityModel } from "src/core/entities/BaseEntity"
 import { EntityID } from "src/core/entities/EntityID"
 import { Slug } from "./value-objects/Slug"
 import { AggregateRoot } from "src/core/entities/AggregateRoot"
-import { QuestionAttachment } from "./QuestionAttachment"
+import { QuestionAttachmentList } from "./watched-lists/QuestionAttachmentList"
 
 export interface QuestionModel extends EntityModel {
     title: string
@@ -11,7 +11,7 @@ export interface QuestionModel extends EntityModel {
     content: string
     authorId: EntityID
     bestAnswerID?: EntityID
-    attachments?: QuestionAttachment[]
+    attachments?: QuestionAttachmentList
     createdAt: Date
     updatedAt?: Date
 }
@@ -35,7 +35,7 @@ export class Question extends AggregateRoot<QuestionModel> {
     }
 
     get attachments() {
-        return this.properties.attachments ?? []
+        return this.properties.attachments ?? new QuestionAttachmentList()
     }
 
     get createdAt() {
@@ -75,7 +75,7 @@ export class Question extends AggregateRoot<QuestionModel> {
         this.setUpdate()
     }
 
-    set attachments(attachments: QuestionAttachment[]) {
+    set attachments(attachments: QuestionAttachmentList) {
         this.properties.attachments = attachments
     }
 

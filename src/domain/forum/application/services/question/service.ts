@@ -14,6 +14,8 @@ import { ResourceNotFoundError } from "../../errors/ResourceNotFoundError";
 import { NotAllowedError } from "../../errors/NotAllowedError";
 import EditQuestionUseCaseResponse from "./contracts/EditQuestionResponse";
 import { QuestionAttachment } from "src/domain/forum/enterprise/entities/QuestionAttachment";
+import { QuestionAttachmentList } from "src/domain/forum/enterprise/entities/watched-lists/QuestionAttachmentList";
+import { QuestionAttachmentsRepository } from "src/domain/forum/repositories/IQuestionAttachmentsRepository";
 
 interface FetchRecentQuestionsRequest {
     page: number
@@ -33,7 +35,11 @@ interface FindQuestionByIdResponse {
 
 
 export class QuestionService {
-    constructor(private repository: IQuestionsRepository, private answersService: AnswerService) { }
+    constructor(
+        private repository: IQuestionsRepository,
+        private answersService: AnswerService,
+        private questionAttachmentsRepository: QuestionAttachmentsRepository,
+    ) { }
 
     public async createQuestion(req: CreateQuestionRequest): Promise<CreateQuestionResponse> {
         const question = new Question({
@@ -52,7 +58,7 @@ export class QuestionService {
 
                 })
             })
-            question.attachments = attachments
+            question.attachments = new QuestionAttachmentList(attachments)
         }
 
         this.repository.create(question);
@@ -95,7 +101,7 @@ export class QuestionService {
         await this.repository.delete(question);
     }
 
-    async updateQuestion({ authorId, questionId, title, content, }: EditQuestionUseCaseRequest): Promise<EditQuestionUseCaseResponse> {
+    async updateQuestion({ authorId, questionId, title, content, attachmentsIds }: EditQuestionUseCaseRequest): Promise<EditQuestionUseCaseResponse> {
         const question = await this.repository.findById(questionId)
 
         if (!question) {
@@ -106,8 +112,25 @@ export class QuestionService {
             return left(new NotAllowedError())
         }
 
+        const currentQuestionAttachments = await this.questionAttachmentsRepository.findManyByQuestionId(questionId)
+
+        const questionAttachmentList = new QuestionAttachmentList(
+            currentQuestionAttachments,
+        )
+
+
+        const questionAttachments = attachmentsIds.map((attachmentId) => {
+            return new QuestionAttachment({
+                attachmentId: new EntityID(attachmentId),
+                questionId: question.Id,
+            })
+        })
+
+        questionAttachmentList.update(questionAttachments)
+
         question.title = title
         question.content = content
+        question.attachments = questionAttachmentList
 
         await this.repository.save(question)
 

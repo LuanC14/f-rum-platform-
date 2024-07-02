@@ -3,4 +3,5 @@ interface EditQuestionUseCaseRequest {
     questionId: string
     title: string
     content: string
+    attachmentsIds: string[]
 }
