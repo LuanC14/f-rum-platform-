@@ -1,6 +1,6 @@
-import { QuestionAttachment } from "../enterprise/entities/QuestionAttachment";
+import { QuestionAttachment } from "../../enterprise/entities/QuestionAttachment"
 
-export interface QuestionAttachmentsRepository {
+export interface IQuestionAttachmentsRepository {
     findManyByQuestionId(questionId: string): Promise<QuestionAttachment[]>
     deleteManyByQuestionId(questionId: string): Promise<void>
   }

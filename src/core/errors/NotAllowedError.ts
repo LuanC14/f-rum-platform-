@@ -1,4 +1,4 @@
-import { UseCaseError } from "src/core/errors/UseCaseError";
+import { UseCaseError } from "./base/UseCaseError";
 
 export class NotAllowedError extends Error implements UseCaseError {
     constructor() {

@@ -6,6 +6,8 @@ import { SendNotificationUseCaseRequest } from "./contracts/SendNotificationUseC
 import { EntityID } from "src/core/entities/EntityID"
 import { Notification } from "src/domain/notification/enterprise/entities/Notification"
 import { SendNotificationUseCaseResponse } from "./contracts/SendNotificationUseCaseResponse"
+import { ResourceNotFoundError } from "src/core/errors/ResourceNotFoundError"
+import { NotAllowedError } from "src/core/errors/NotAllowedError"
 
 class NotificationService {
   constructor(private notificationsRepository: NotificationsRepository) { }

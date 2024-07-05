@@ -11,13 +11,13 @@ import FetchQuestionAnswersResponse from "./contracts/FetchQuestionAnswersRespon
 
 import { EntityID } from "src/core/entities/EntityID"
 import { Answer } from "src/domain/forum/enterprise/entities/Answer";
-import { IAnswerRepository } from "src/domain/forum/repositories/interfaces/IAnswerRepository";
 import { left, Right, right } from "src/core/utils/either";
-import { ResourceNotFoundError } from "../../errors/ResourceNotFoundError";
-import { NotAllowedError } from "../../errors/NotAllowedError";
+import { ResourceNotFoundError } from "../../../../../core/errors/ResourceNotFoundError";
+import { NotAllowedError } from "../../../../../core/errors/NotAllowedError";
 import { AnswerAttachment } from "src/domain/forum/enterprise/entities/AnswerAttachment";
 import { AnswerAttachmentList } from "src/domain/forum/enterprise/entities/watched-lists/AnswerAttachmentList";
-import { IAnswerAttachmentsRepository } from "src/domain/forum/repositories/IAnswerAttachmentsRepository";
+import { IAnswerRepository } from "../../repositories/interfaces/IAnswerRepository";
+import { IAnswerAttachmentsRepository } from "../../repositories/IAnswerAttachmentsRepository";
 
 
 export class AnswerService {

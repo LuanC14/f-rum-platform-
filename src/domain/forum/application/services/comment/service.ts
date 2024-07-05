@@ -13,12 +13,12 @@ import FetchAnswerCommentsRequest from "./contracts/FetchAnswerCommentsRequest"
 import { EntityID } from "src/core/entities/EntityID"
 import { QuestionComment } from "src/domain/forum/enterprise/entities/QuestionComment"
 import { QuestionService } from "../question/service"
-import { ICommentRepository } from "src/domain/forum/repositories/interfaces/ICommentRepository"
 import { AnswerService } from "../answer/service"
 import { AnswerComment } from "src/domain/forum/enterprise/entities/AnswerComments"
 import { left, right } from "src/core/utils/either"
-import { ResourceNotFoundError } from "../../errors/ResourceNotFoundError"
-import { NotAllowedError } from "../../errors/NotAllowedError"
+import { ResourceNotFoundError } from "../../../../../core/errors/ResourceNotFoundError"
+import { NotAllowedError } from "../../../../../core/errors/NotAllowedError"
+import { ICommentRepository } from "../../repositories/interfaces/ICommentRepository"
 
 export class CommentService {
 

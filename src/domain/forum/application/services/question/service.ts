@@ -7,15 +7,15 @@ import MarkBestAnswerResponse from "./contracts/MarkBestAnswerResponse";
 import { EntityID } from "src/core/entities/EntityID";
 import { Question } from "../../../enterprise/entities/Question";
 import { Slug } from "../../../enterprise/entities/value-objects/Slug";
-import { IQuestionsRepository } from "../../../repositories/interfaces/IQuestionRepository";
 import { AnswerService } from "../answer/service";
 import { left, right } from "src/core/utils/either";
-import { ResourceNotFoundError } from "../../errors/ResourceNotFoundError";
-import { NotAllowedError } from "../../errors/NotAllowedError";
+import { ResourceNotFoundError } from "../../../../../core/errors/ResourceNotFoundError";
+import { NotAllowedError } from "../../../../../core/errors/NotAllowedError";
 import EditQuestionUseCaseResponse from "./contracts/EditQuestionResponse";
 import { QuestionAttachment } from "src/domain/forum/enterprise/entities/QuestionAttachment";
 import { QuestionAttachmentList } from "src/domain/forum/enterprise/entities/watched-lists/QuestionAttachmentList";
-import { QuestionAttachmentsRepository } from "src/domain/forum/repositories/IQuestionAttachmentsRepository";
+import { IQuestionsRepository } from "../../repositories/interfaces/IQuestionRepository";
+import { IQuestionAttachmentsRepository } from "../../repositories/IQuestionAttachmentsRepository";
 
 interface FetchRecentQuestionsRequest {
     page: number
@@ -38,7 +38,7 @@ export class QuestionService {
     constructor(
         private repository: IQuestionsRepository,
         private answersService: AnswerService,
-        private questionAttachmentsRepository: QuestionAttachmentsRepository,
+        private questionAttachmentsRepository: IQuestionAttachmentsRepository,
     ) { }
 
     public async createQuestion(req: CreateQuestionRequest): Promise<CreateQuestionResponse> {
