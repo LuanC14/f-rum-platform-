@@ -1,6 +1,8 @@
-import { BaseEntity, EntityModel } from "src/core/entities/BaseEntity"
+import { EntityModel } from "src/core/entities/BaseEntity"
 import { EntityID } from "src/core/entities/EntityID"
 import { AnswerAttachmentList } from "./watched-lists/AnswerAttachmentList"
+import { AggregateRoot } from "src/core/entities/AggregateRoot"
+import { AnswerCreatedEvent } from "../events/AnswerCreateadEvent"
 
 export interface AnswerModel extends EntityModel {
     content: string
@@ -11,7 +13,21 @@ export interface AnswerModel extends EntityModel {
     updatedAt?: Date
 }
 
-export class Answer extends BaseEntity<AnswerModel> {
+export class Answer extends AggregateRoot<AnswerModel> {
+
+    constructor(model: AnswerModel) {
+        super(model)
+
+        const isNewAnswer = !model.id
+
+        if (isNewAnswer) {
+            this.addDomainEvent(new AnswerCreatedEvent(this))
+        }
+
+        return this
+
+    }
+
     get content(): string {
         return this.properties.content
     }
